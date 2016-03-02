@@ -1,0 +1,13 @@
+Index: terralib/kernel/yyTemporal.cpp
+===================================================================
+--- terralib/kernel/yyTemporal.cpp	(révision 11940)
++++ terralib/kernel/yyTemporal.cpp	(copie de travail)
+@@ -74,7 +74,7 @@
+ 	myinputptr_aux = strIn;
+ 	myinputptr = myinputptr_aux.c_str();
+ 	
+-        myinputlim = (intptr_t)myinputptr + strIn.size ();
++    //myinputlim = (intptr_t)myinputptr + strIn.size ();
+ 	database_ = db;
+ 	return 1;
+ }
