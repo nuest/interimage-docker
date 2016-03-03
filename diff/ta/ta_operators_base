@@ -1,43 +1,8 @@
 Index: ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro
 ===================================================================
---- ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro	(revision 210)
-+++ ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro	(working copy)
-@@ -8,25 +8,26 @@
-   OBJECTS_DIR = Debug
-   MOC_DIR = Debug
-   UI_DIR = Debug
--  
-+
-   DESTDIR = ../../../bin/Debug
- }
--release {    
-+release {
-   DEFINES += NDEBUG
--  
-+
-   OBJECTS_DIR = Release
-   MOC_DIR = Release
-   UI_DIR = Release
--  
-+
-   DESTDIR = ../../../bin/Release
- }
--           
-+
- INCLUDEPATH += \
-   ../../../src/ta_operators_base \
--  ../../../src/ta_operators_base/shpdriver \
-+  $$TA_GEOTIF_SRC_PATH \
-+  $$TA_TERRALIB_PATH/src/shapelib \
-+  $$TA_TERRALIB_PATH/src \
-+  $$TA_TERRALIB_PATH/src/terralib/kernel \
-   $$TA_TERRALIB_PATH/src/terralib/functions \
--  $$TA_TERRALIB_PATH/src/terralib/kernel \
--  $$TA_TERRALIB_PATH/src/shapelib \
-   $$TA_TERRALIB_PATH/src/terralib/image_processing \
-   $$TA_TERRALIB_PATH/src/tiff
- 
-@@ -33,8 +34,8 @@
+--- ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro	(révision 210)
++++ ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro	(copie de travail)
+@@ -33,8 +33,8 @@
  HEADERS =
  
  SOURCES = \
@@ -48,7 +13,3 @@ Index: ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro
    ../../../src/ta_operators_base/execTABUExport.cpp \
    ../../../src/ta_operators_base/execTANDVISegmenter.cpp \
    ../../../src/ta_operators_base/execTAClassifier.cpp \
-@@ -49,6 +50,3 @@
-   ../../../src/ta_operators_base/TaArithmeticOperator.cpp \
-   ../../../src/ta_operators_base/OpSupportFunctions.cpp \
-   ../../../src/ta_operators_base/execTAArithmetic.cpp

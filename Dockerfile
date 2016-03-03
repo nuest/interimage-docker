@@ -4,6 +4,9 @@ MAINTAINER Adrien André <adr.andre@laposte.net>
 # TerraLib (GIS library)
 #   Site: http://www.terralib.org
 #   Doxygen: http://www.terralib.org/html/v410/index.html
+# TerraAIDA (Image processing operators)
+#   Documentation: http://wiki.dpi.inpe.br/doku.php?id=interimage:operators_documentation
+#   Creation: http://wiki.dpi.inpe.br/doku.php?id=interimage:creating_operators
 # InterIMAGE
 #   http://tolomeofp7.unipv.it/SoftwareTools/InterIMAGE
 #   http://www.lvc.ele.puc-rio.br/projects/interimage
@@ -41,15 +44,12 @@ WORKDIR $DIR_DEV
 
 # Dependencies
 RUN apt-get install -y \
-    libtiff5-dev \
-    libjpeg-dev \
     zlib1g-dev \
-    libgeotiff-dev \
-    libgdal1-dev \
-    freeglut3-dev \
-    libqwt-dev \
+    libtiff5-dev libjpeg-dev \
+    libgeotiff-dev libgdal1-dev \
+    freeglut3-dev libqwt-dev \
     libpq-dev \
-    qt4-default qt4-qmake && \
+    libcppunit-dev qt4-default qt4-qmake && \
     apt-get clean
 
 COPY diff /tmp/diff
@@ -93,23 +93,31 @@ RUN patch -p0 -i /tmp/diff/ta/ta_operators_base
 
 WORKDIR	$DIR_DEV/terraaida/ta_operators/build/linux-g++
 
-# RUN export TA_TERRALIB_PATH=$DIR_DEV/terralib ; \
-#     export TA_TERRALIB_SRC_PATH=$DIR_DEV/terralib/src ; export TA_TERRALIB_BIN_PATH=$DIR_DEV/terralib/bin ; \
-#     export TA_TIF_SRC_PATH=/usr/include/x86_64-linux-gnu ; export TA_TIF_BIN_PATH=/usr/lib/x86_64-linux-gnu/libtiff.so ; \
-#     export TA_GEOTIF_SRC_PATH=/usr/include/geotiff ; export TA_GEOTIF_BIN_PATH=/usr/lib/libgeotiff.so ; \
-#     export TA_JPG_SRC_PATH=/usr/include ; export TA_JPG_BIN_PATH=/usr/lib/x86_64-linux-gnu/libjpeg.so ; \
-#     export TA_CPPUNIT_SRC_PATH= ; export TA_CPPUNIT_BIN_PATH= ; \
-#     qmake -r && make clean && make
+RUN TA_TERRALIB_PATH=$DIR_DEV/terralib \
+    TA_TERRALIB_SRC_PATH=$DIR_DEV/terralib/src TA_TERRALIB_BIN_PATH=$DIR_DEV/terralib/bin \
+    TA_TIF_SRC_PATH=/usr/include/x86_64-linux-gnu TA_TIF_BIN_PATH=/usr/lib/x86_64-linux-gnu/libtiff.so \
+    TA_GEOTIF_SRC_PATH=/usr/include/geotiff TA_GEOTIF_BIN_PATH=/usr/lib/libgeotiff.so \
+    TA_JPG_SRC_PATH=/usr/include TA_JPG_BIN_PATH=/usr/lib/x86_64-linux-gnu/libjpeg.so \
+    TA_CPPUNIT_SRC_PATH=/usr/include/cppunit TA_CPPUNIT_BIN_PATH=/usr/lib/x86_64-linux-gnu/libcppunit.so \
+    qmake -r -Wall && make clean
+#RUN make
 
 
 
 # InterIMAGE installation
 ENV VERSION_INTERIMAGE 1.43
+#RUN svn co https://svn.dpi.inpe.br/interimage/interimage/develop interimage
 #RUN wget -nv -c -O interimage-${VERSION_INTERIMAGE}.zip "http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/InterIMAGE%20Source%20${VERSION_INTERIMAGE}.zip" && \
-#    unzip interimage-${VERSION_INTERIMAGE}.zip && \
-#    mv InterIMAGE\ Source\ 1.43 interimage
+#    unzip interimage-${VERSION_INTERIMAGE}.zip && mv "InterIMAGE Source ${VERSION_INTERIMAGE}" interimage
 COPY interimage $DIR_DEV/interimage
 
 WORKDIR $DIR_DEV/interimage
+RUN find -type f -name "*.pro" -exec sed -i -e 's/terralib_cvs/terralib/g' {} \;
+RUN sed -i '/^namespace/i \
+\#define _snprintf snprintf\
+\
+' gaimage/garaster.cpp
+RUN sed -i -e 's@^//#define DECLSPEC_GAIMAGE@#define DECLSPEC_GAIMAGE@' gaimage/galabelimagelist.h
 
-RUN qmake -r && make clean && make
+RUN qmake -r && make clean
+#RUN make
