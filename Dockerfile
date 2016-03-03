@@ -1,15 +1,6 @@
 FROM ubuntu:trusty
 MAINTAINER Adrien André <adr.andre@laposte.net>
 
-# TerraLib (GIS library)
-#   Site: http://www.terralib.org
-#   Doxygen: http://www.terralib.org/html/v410/index.html
-# TerraAIDA (Image processing operators)
-#   Documentation: http://wiki.dpi.inpe.br/doku.php?id=interimage:operators_documentation
-#   Creation: http://wiki.dpi.inpe.br/doku.php?id=interimage:creating_operators
-# InterIMAGE
-#   http://tolomeofp7.unipv.it/SoftwareTools/InterIMAGE
-#   http://www.lvc.ele.puc-rio.br/projects/interimage
 # Installation
 #   http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/install_interimage_ubuntu.txt
 #
