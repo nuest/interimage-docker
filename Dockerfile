@@ -3,8 +3,6 @@ MAINTAINER Adrien André <adr.andre@laposte.net>
 
 # Installation
 #   http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/install_interimage_ubuntu.txt
-#
-# See: http://courses.neteler.org/fun-docker-grass-gis-software
 
 RUN apt-get update && apt-get -y upgrade && apt-get clean
 
@@ -18,110 +16,90 @@ RUN apt-get install -y wget nano emacs24-nox tree unzip \
 ENV DIR_DEV /opt/src
 
 RUN mkdir $DIR_DEV
-RUN mkdir $DIR_DEV/terralib
 RUN mkdir $DIR_DEV/interimage
+
 WORKDIR $DIR_DEV
-
-
-
-# # Make SVN accept INPE DPI certificate
-# RUN openssl s_client -connect svn.dpi.inpe.br:443 -showcerts | \
-#     openssl x509 -outform PEM > \
-#     /etc/ssl/certs/Instituto_Nacional_de_Pesquisas_Espaciais.pem
-# RUN sed -i '/CAcert.pem/a ssl-authority-files = /etc/ssl/certs/Instituto_Nacional_de_Pesquisas_Espaciais.pem' /etc/subversion/servers
-# RUN sed -i '/CAcert.pem/a ssl-trust-default-ca = true' /etc/subversion/servers
 
 
 
 # Dependencies
 RUN apt-get install -y \
-    zlib1g-dev \
-    libtiff5-dev libjpeg-dev \
-    libgeotiff-dev libgdal1-dev \
-    freeglut3-dev libqwt-dev \
-    libpq-dev \
-    libcppunit-dev qt4-default qt4-qmake && \
+      zlib1g-dev \
+      libtiff5-dev libjpeg-dev \
+      libgeotiff-dev libgdal1-dev \
+      freeglut3-dev libqwt-dev \
+      libpq-dev \
+      libcppunit-dev \
+      qt4-default qt4-qmake && \
     apt-get clean
-
-COPY diff /tmp/diff
-
-
-
-# TerraLib installation
-ENV VERSION_TERRALIB 4-3-0
-#RUN wget -nv -c http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/terralib_cvs.zip && unzip -d terralib terralib_cvs.zip
-#RUN apt-get install -y libterralib libterralib-dev libterralib-doc
-#RUN echo t | svn co https://svn.dpi.inpe.br/terralib/tags/v-${VERSION_TERRALIB} terralib/${VERSION_TERRALIB}
-COPY terralib/${VERSION_TERRALIB} $DIR_DEV/terralib
-
-WORKDIR $DIR_DEV/terralib
-RUN cd $DIR_DEV/terralib/src && patch -p0 -i /tmp/diff/tl/yyTemporal
-RUN cd $DIR_DEV/terralib/src && patch -p0 -i /tmp/diff/tl/TeConnectionPool
-RUN cd $DIR_DEV/terralib/src && patch -p0 -i /tmp/diff/tl/TeApplicationUtils
-RUN cd $DIR_DEV/terralib/src && patch -p0 -i /tmp/diff/tl/TeEWKBDriver
-
-RUN mkdir bin
-RUN cmake -D CMAKE_BUILD_TYPE=Release \
-      -D BUILD_TERRAVIEW=OFF \
-      -D GeoTIFF_INCLUDE_DIR=/usr/include/geotiff -D GeoTIFF_LIBRARY=/usr/lib/libgeotiff.so \
-      -D JPEG_INCLUDE_DIR=/usr/include -D JPEG_LIBRARY=/usr/lib/x86_64-linux-gnu/libjpeg.so \
-      -D TIFF_INCLUDE_DIR=/usr/include/x86_64-linux-gnu -D TIFF_LIBRARY=/usr/lib/x86_64-linux-gnu/libtiff.so \
-      -D ZLIB_INCLUDE_DIR=/usr/include-D ZLIB_LIBRARY=/usr/lib/x86_64-linux-gnu/libz.so \
-      -D PostGIS_INCLUDE_DIR=/usr/include/postgresql -D PostgreSQL_LIBRARY=/usr/lib/libpq.so \
-      -D GLUT_INCLUDE_DIR=/usr/include/GL -D GLUT_LIBRARY=/usr/lib/x86_64-linux-gnu/libglut.so \
-      -D QWT_INCLUDE_DIR=/usr/include/qwt \
-      build/cmake
-RUN make
-RUN make install
-
-
-
-# TerraAida installation
-#RUN svn co https://svn.dpi.inpe.br/terraaida/trunk terraaida
-COPY terraaida $DIR_DEV/terraaida
-
-WORKDIR $DIR_DEV/terraaida
-RUN patch -p0 -i /tmp/diff/ta/base
-RUN patch -p0 -i /tmp/diff/ta/globalvars
-RUN patch -p0 -i /tmp/diff/ta/ta_operators_base
-
-
-WORKDIR	$DIR_DEV/terraaida/ta_operators/build/linux-g++
-
-RUN TA_TERRALIB_PATH=$DIR_DEV/terralib \
-    TA_GEOTIF_SRC_PATH=/usr/include/geotiff \
-    TA_GEOTIF_BIN_PATH=/usr/lib/libgeotiff.so \
-    TA_TERRALIB_SRC_PATH=$DIR_DEV/terralib/src \
-    TA_TERRALIB_BIN_PATH=$DIR_DEV/terralib/bin \
-    TA_TIF_SRC_PATH=/usr/include/x86_64-linux-gnu \
-    TA_TIF_BIN_PATH=/usr/lib/x86_64-linux-gnu/libtiff.so \
-    TA_JPG_SRC_PATH=/usr/include \
-    TA_JPG_BIN_PATH=/usr/lib/x86_64-linux-gnu/libjpeg.so \
-    TA_CPPUNIT_SRC_PATH=/usr/include/cppunit \
-    TA_CPPUNIT_BIN_PATH=/usr/lib/x86_64-linux-gnu/libcppunit.so \
-    qmake -r -Wall && make clean
-RUN make
 
 
 
 # InterIMAGE installation
-ENV VERSION_INTERIMAGE 1.43
-#RUN svn co https://svn.dpi.inpe.br/interimage/interimage/develop interimage
-#RUN wget -nv -c -O interimage-1.27.tar.gz               "http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/InterIMAGE_1.27_Linux.tar.gz" && \
-#    tar zxv -C interimage -f interimage-1.27.tar.gz
-#RUN wget -nv -c -O interimage-${VERSION_INTERIMAGE}.zip "http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/InterIMAGE%20Source%20${VERSION_INTERIMAGE}.zip" && \
-#    unzip interimage-${VERSION_INTERIMAGE}.zip && mv "InterIMAGE Source ${VERSION_INTERIMAGE}" interimage
-COPY interimage $DIR_DEV/interimage
+ENV VERSION_INTERIMAGE 1.27
+RUN wget -nv -c -O interimage-${VERSION_INTERIMAGE}.tar.gz http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/InterIMAGE_${VERSION_INTERIMAGE}_Linux.tar.gz && \
+    tar zxv -C interimage -f interimage-${VERSION_INTERIMAGE}.tar.gz
 
 WORKDIR $DIR_DEV/interimage
-RUN find -type f -name "*.pro" -exec sed -i -e 's/terralib_cvs/terralib/g' {} \;
-RUN find -type f -name "*.pro" -exec sed -i -e 's@terralibmw/@@' {} \;
-RUN sed -i '/^namespace/i \
-\#define _snprintf snprintf\
-\
-' gaimage/garaster.cpp
-RUN sed -i -e 's@^//#define DECLSPEC_GAIMAGE@#define DECLSPEC_GAIMAGE@' gaimage/galabelimagelist.h
-RUN find -type f -name "*.pro" -exec sed -i -e 's/_mw//' {} \;
+
+WORKDIR $DIR_DEV/interimage/terralib_cvs/terralibmw
 
 RUN qmake -r && make clean
 RUN make
+
+RUN find Debug -type f -name "lib*.so*" -exec cp {} /usr/local/lib/ \;
+RUN for lib in gaimage shape_file_editor local_engine ta_tdbu image_visualization bottomupgui qtparser ; do \
+      cp $DIR_DEV/interimage/bin_${VERSION_INTERIMAGE}/bin/lib${lib}.so.1.0.0 /usr/local/lib/ ; \
+    done
+# FIXME: This is dirty. Use cp --preserve=links ?
+WORKDIR /usr/local/lib/
+RUN for lib in libshapelib libterralib libterralibpdi libterralibtiff gaimage shape_file_editor local_engine ta_tdbu image_visualization bottomupgui qtparser ; do \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so ; \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so.1 ; \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so.1.0 ; \
+    done
+
+
+
+# TA Operators
+WORKDIR $DIR_DEV/interimage/ta_operators/build/linux-g++
+RUN TA_TERRALIB_PATH=$DIR_DEV/interimage/terralib_cvs qmake -r && make clean
+RUN make
+WORKDIR $DIR_DEV/interimage
+
+RUN find ta_operators/bin/Debug -type f -name "lib*.so*" -exec cp {} /usr/local/lib/ \;
+# FIXME: This is dirty:
+WORKDIR /usr/local/lib/
+RUN for lib in ta_operators_base ; do \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so ; \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so.1 ; \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so.1.0 ; \
+    done
+WORKDIR $DIR_DEV/interimage
+RUN find ta_operators/bin/Debug -type f -name "ta_*" -exec cp {} /usr/local/lib/ \;
+
+RUN ldconfig
+
+RUN mkdir InterIMAGE_Source_${VERSION_INTERIMAGE}/bin
+RUN find ta_operators/bin/Debug -type f -name "lib*.so*" -exec cp {} $DIR_DEV/interimage/InterIMAGE_Source_${VERSION_INTERIMAGE}/bin/ \;
+# FIXME: This is dirty:
+WORKDIR $DIR_DEV/interimage/InterIMAGE_Source_${VERSION_INTERIMAGE}/bin/
+RUN for lib in ta_operators_base ; do \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so ; \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so.1 ; \
+      ln -s lib${lib}.so.1.0.0 lib${lib}.so.1.0 ; \
+    done
+WORKDIR $DIR_DEV/interimage
+RUN find ta_operators/bin/Debug -type f -name "ta_*" -exec cp {} $DIR_DEV/interimage/InterIMAGE_Source_${VERSION_INTERIMAGE}/bin/ \;
+
+
+
+## Compilation of InterIMAGE
+WORKDIR $DIR_DEV/interimage/InterIMAGE_Source_${VERSION_INTERIMAGE}
+RUN qmake -r && make clean
+RUN make
+
+WORKDIR $DIR_DEV/interimage
+RUN cp -r bin_${VERSION_INTERIMAGE}/bin/help bin_${VERSION_INTERIMAGE}/bin/share InterIMAGE_Source_${VERSION_INTERIMAGE}/bin/
+
+# cd /opt/src/interimage/InterIMAGE_Source_1.27/bin && ./interimage
