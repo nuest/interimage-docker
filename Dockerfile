@@ -9,9 +9,10 @@ MAINTAINER Adrien André <adr.andre@laposte.net>
 RUN apt-get update && apt-get -y upgrade && apt-get clean
 
 
-RUN apt-get install -y wget nano emacs24-nox tree unzip \
-    cmake-curses-gui \
-    cmake subversion build-essential gdb && \
+RUN apt-get install -y wget unzip \
+    cmake subversion build-essential gdb \
+    tree nano emacs24-nox \
+    cmake-curses-gui && \
     apt-get clean
 
 
@@ -66,10 +67,10 @@ RUN cmake -D CMAKE_BUILD_TYPE=Release \
       -D GeoTIFF_INCLUDE_DIR=/usr/include/geotiff -D GeoTIFF_LIBRARY=/usr/lib/libgeotiff.so \
       -D JPEG_INCLUDE_DIR=/usr/include -D JPEG_LIBRARY=/usr/lib/x86_64-linux-gnu/libjpeg.so \
       -D TIFF_INCLUDE_DIR=/usr/include/x86_64-linux-gnu -D TIFF_LIBRARY=/usr/lib/x86_64-linux-gnu/libtiff.so \
-      -D ZLIB_INCLUDE_DIR=/usr/include-D ZLIB_LIBRARY=/usr/lib/x86_64-linux-gnu/libz.so \
+      -D ZLIB_INCLUDE_DIR=/usr/include -D ZLIB_LIBRARY=/usr/lib/x86_64-linux-gnu/libz.so \
       -D PostGIS_INCLUDE_DIR=/usr/include/postgresql -D PostgreSQL_LIBRARY=/usr/lib/libpq.so \
       -D GLUT_INCLUDE_DIR=/usr/include/GL -D GLUT_LIBRARY=/usr/lib/x86_64-linux-gnu/libglut.so \
-      -D QWT_INCLUDE_DIR=/usr/include/qwt \
+      -D QWT_INCLUDE_DIR=/usr/include/qwt -D QWT_LIBRARY=/usr/lib/libqwt.so \
       build/cmake
 RUN make
 RUN make install
