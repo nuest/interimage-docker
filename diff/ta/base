@@ -1,0 +1,35 @@
+Index: ta_operators/build/linux-g++/base/base.pro
+===================================================================
+--- ta_operators/build/linux-g++/base/base.pro	(revision 210)
++++ ta_operators/build/linux-g++/base/base.pro	(working copy)
+@@ -14,6 +14,7 @@
+   DESTDIR = ../../../bin/Debug
+   
+   LIBS += -L../../../bin/Debug
++  LIBS += -L$$TA_TERRALIB_PATH/Debug
+   LIBS += -L$$TA_TERRALIB_PATH/terralibx/Debug
+ }
+ release {  
+@@ -24,12 +25,11 @@
+   DESTDIR = ../../../bin/Release
+   
+   LIBS += -L../../../bin/Release
++  LIBS += -L$$TA_TERRALIB_PATH/Release
+   LIBS += -L$$TA_TERRALIB_PATH/terralibx/Release
+ }
+  
+-LIBS += -lterralibtiff -ljpeg \
+-  -lshapelib -lterralib \
+-  -lterralibpdi \
++LIBS += -ljpeg -lterralib \
+   -lta_operators_base
+ 
+ 
+@@ -38,6 +38,7 @@
+ INCLUDEPATH += \
+   ../../../src/ta_operators_base \
+   ../../../src/ta_operators_base/shpdriver \
++  $$TA_TERRALIB_PATH/src \
+   $$TA_TERRALIB_PATH/src/terralib/kernel \
+   $$TA_TERRALIB_PATH/src/terralib/image_processing
+ 
