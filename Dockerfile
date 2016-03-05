@@ -25,15 +25,6 @@ WORKDIR $DIR_DEV
 
 
 
-# # Make SVN accept INPE DPI certificate
-# RUN openssl s_client -connect svn.dpi.inpe.br:443 -showcerts | \
-#     openssl x509 -outform PEM > \
-#     /etc/ssl/certs/Instituto_Nacional_de_Pesquisas_Espaciais.pem
-# RUN sed -i '/CAcert.pem/a ssl-authority-files = /etc/ssl/certs/Instituto_Nacional_de_Pesquisas_Espaciais.pem' /etc/subversion/servers
-# RUN sed -i '/CAcert.pem/a ssl-trust-default-ca = true' /etc/subversion/servers
-
-
-
 # Dependencies
 RUN apt-get install -y \
     zlib1g-dev \
@@ -44,14 +35,13 @@ RUN apt-get install -y \
     libcppunit-dev qt4-default qt4-qmake && \
     apt-get clean
 
-COPY diff /tmp/diff
+COPY patch /tmp/patch
 
 
 
 # TerraLib installation
 ENV VERSION_TERRALIB 4-3-0
 #RUN wget -nv -c http://www.lvc.ele.puc-rio.br/projects/interimage/download/files/terralib_cvs.zip && unzip -d terralib terralib_cvs.zip
-#RUN apt-get install -y libterralib libterralib-dev libterralib-doc
 #RUN echo t | svn co https://svn.dpi.inpe.br/terralib/tags/v-${VERSION_TERRALIB} terralib/${VERSION_TERRALIB}
 COPY terralib/${VERSION_TERRALIB} $DIR_DEV/terralib
 
