@@ -1,0 +1,80 @@
+Index: ta_operators/build/linux-g++/base/base.pro
+===================================================================
+--- ta_operators/build/linux-g++/base/base.pro	(révision 210)
++++ ta_operators/build/linux-g++/base/base.pro	(copie de travail)
+@@ -14,7 +14,6 @@
+   DESTDIR = ../../../bin/Debug
+   
+   LIBS += -L../../../bin/Debug
+-  LIBS += -L$$TA_TERRALIB_PATH/terralibx/Debug
+ }
+ release {  
+   OBJECTS_DIR = Release
+@@ -24,13 +23,11 @@
+   DESTDIR = ../../../bin/Release
+   
+   LIBS += -L../../../bin/Release
+-  LIBS += -L$$TA_TERRALIB_PATH/terralibx/Release
+ }
+  
+-LIBS += -lterralibtiff -ljpeg \
+-  -lshapelib -lterralib \
+-  -lterralibpdi \
+-  -lta_operators_base
++LIBS += -lta_operators_base \
++  -lterralib_shp \
++  -lterralib -ljpeg
+ 
+ 
+ # Code includes and paths
+@@ -38,6 +35,8 @@
+ INCLUDEPATH += \
+   ../../../src/ta_operators_base \
+   ../../../src/ta_operators_base/shpdriver \
++  $$TA_TERRALIB_PATH/src \
++  $$TA_TERRALIB_PATH/src/terralib \
+   $$TA_TERRALIB_PATH/src/terralib/kernel \
+   $$TA_TERRALIB_PATH/src/terralib/image_processing
+ 
+Index: ta_operators/build/linux-g++/base/globalvars.pro
+===================================================================
+--- ta_operators/build/linux-g++/base/globalvars.pro	(révision 210)
++++ ta_operators/build/linux-g++/base/globalvars.pro	(copie de travail)
+@@ -21,6 +21,9 @@
+ isEmpty(TA_TERRALIB_PATH) {
+   error("TA_TERRALIB_PATH environment variable not found")
+ }
++# The path to LibGeoTIFF sources.
++TA_GEOTIF_SRC_PATH = $$(TA_GEOTIF_SRC_PATH)
++TA_GEOTIF_BIN_PATH = $$(TA_GEOTIF_BIN_PATH)
+ 
+ # Stdout log enabled by defaul, even in release mode
+ DEFINES += TEAGN_ENABLE_STDOUT_LOG
+Index: ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro
+===================================================================
+--- ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro	(révision 210)
++++ ta_operators/build/linux-g++/ta_operators_base/ta_operators_base.pro	(copie de travail)
+@@ -24,17 +24,19 @@
+ INCLUDEPATH += \
+   ../../../src/ta_operators_base \
+   ../../../src/ta_operators_base/shpdriver \
++  $$TA_GEOTIF_SRC_PATH \
++  $$TA_TERRALIB_PATH/src \
++  $$TA_TERRALIB_PATH/src/terralib/kernel \
+   $$TA_TERRALIB_PATH/src/terralib/functions \
+-  $$TA_TERRALIB_PATH/src/terralib/kernel \
++  $$TA_TERRALIB_PATH/src/terralib/image_processing \
+   $$TA_TERRALIB_PATH/src/shapelib \
+-  $$TA_TERRALIB_PATH/src/terralib/image_processing \
+   $$TA_TERRALIB_PATH/src/tiff
+ 
+ HEADERS =
+ 
+ SOURCES = \
+-  ../../../src/ta_operators_base/shpdriver/TeDriverSHPDBF.cpp \
+-  ../../../src/ta_operators_base/shpdriver/TeSHPDriverFactory.cpp \
++  $$TA_TERRALIB_PATH/src/terralib/drivers/shapelib/TeDriverSHPDBF.cpp \
++  $$TA_TERRALIB_PATH/src/terralib/drivers/shapelib/TeSHPDriverFactory.cpp \
+   ../../../src/ta_operators_base/execTABUExport.cpp \
+   ../../../src/ta_operators_base/execTANDVISegmenter.cpp \
+   ../../../src/ta_operators_base/execTAClassifier.cpp \

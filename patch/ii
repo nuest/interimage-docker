@@ -1,0 +1,272 @@
+Index: base/terralib.pro
+===================================================================
+--- base/terralib.pro	(revision 91)
++++ base/terralib.pro	(working copy)
+@@ -1,37 +1,37 @@
+ ###########################################################################
+ 
+ #Linux
+-#LIBS += -L/home/dario/terralib_cvs/terralibx/lib \
++#LIBS += -L/home/dario/terralib/terralibx/lib \
+ #    -lz \
+ #    -ljpeg \
+ #    -ltiff \
+-#    -lterralibpdi \
++#     \
+ #    -lshapelib \
+ #    -lterralib
+ 
+ #Win32_MW
+-#LIBS += -L../../terralib_cvs/src/zlib/lib \
+-#    -L../../terralib_cvs/src/tiff/Release \
+-#    -L../../terralib_cvs/src/libjpeg/Release \
+-#    -L../../terralib_cvs/src/shapelib/Release \
+-#    -L../../terralib_cvs/src/terralib/kernel/Release \
+-#    -L../../terralib_cvs/src/terralib/image_processing/Release \
++#LIBS += -L../../terralib/src/zlib/lib \
++#    -L../../terralib/src/tiff/Release \
++#    -L../../terralib/src/libjpeg/Release \
++#    -L../../terralib/src/shapelib/Release \
++#    -L../../terralib/src/terralib/kernel/Release \
++#    -L../../terralib/src/terralib/image_processing/Release \
+ #    -lz \
+-#    -ljpeg_mw \
+-#    -ltiff_mw \
+-#    -lterralibpdi_mw \
+-#    -lshapelib_mw \
+-#    -lterralib_mw
++#    -ljpeg \
++#    -ltiff \
++#     \
++#    -lshapelib \
++#    -lterralib
+ 
+-LIBS += -L../../terralib_cvs/terralibmw/Debug \
+-        -lzlib1 \
+-        -llibtiff_mw \
+-        -llibjpeg_mw \
+-        -llibshapelib_mw \
+-        -llibterralib_mw \
+-        -llibterralibpdi_mw
++LIBS += -L../../terralib/Debug \
++        -lz \
++        -ltiff \
++        -ljpeg \
++        -lterralib_shp \
++        -lterralib \
++        
+ 
+-INCLUDEPATH += ../../terralib_cvs/src/shapelib \
+-			   ../../terralib_cvs/src/terralib/image_processing \
+-               ../../terralib_cvs/src/terralib/kernel
++INCLUDEPATH += ../../terralib/src/shapelib \
++			   ../../terralib/src/terralib/image_processing \
++               ../../terralib/src/terralib/kernel
+ 	
+Index: gaimage/gaarray2dt.h
+===================================================================
+--- gaimage/gaarray2dt.h	(revision 91)
++++ gaimage/gaarray2dt.h	(working copy)
+@@ -19,6 +19,7 @@
+ #define GAARRAY2DT_H
+ 
+ #include <assert.h>
++#include <cstring>
+ #include "gashareddatat.h"
+ 
+ namespace Ga {
+Index: gaimage/gaimage.pro
+===================================================================
+--- gaimage/gaimage.pro	(revision 91)
++++ gaimage/gaimage.pro	(working copy)
+@@ -61,7 +61,7 @@
+ LIBS += -lpfm \
+     -lnetpbm \
+     -L../../netpbmBin/lib \
+-    -lfftw3-3 \
++    -lfftw3 \
+     -L../fftw \
+     -L../bin
+ CONFIG +=  qt release
+Index: gda/gda.pro
+===================================================================
+--- gda/gda.pro	(revision 91)
++++ gda/gda.pro	(working copy)
+@@ -31,9 +31,9 @@
+     ../qtparser \
+     ../../netpbmBin/include \
+     ../bottomupgui \
+-    ../../terralib_cvs/src/shapelib \
+-    ../../terralib_cvs/src/terralib/image_processing \
+-    ../../terralib_cvs/src/terralib/kernel
++    ../../terralib/src/shapelib \
++    ../../terralib/src/terralib/image_processing \
++    ../../terralib/src/terralib/kernel
+ LIBS += -lcore \
+     -lgaimage \
+     -lsemnetgui \
+@@ -44,13 +44,13 @@
+     -lbottomupgui \
+     -L../../netpbmBin/lib \
+     -L../bin \
+-    -L../../terralib_cvs/terralibmw/Debug \
+-    -lzlib1 \
+-    -llibtiff_mw \
+-    -llibjpeg_mw \
+-    -llibshapelib_mw \
+-    -llibterralib_mw \
+-    -llibterralibpdi_mw
++    -L../../terralib/Debug \
++    -lz \
++    -ltiff \
++    -ljpeg \
++    -lterralib_shp \
++    -lterralib \
++    
+ 
+ CONFIG += qt \
+     release
+Index: operators/ga_td_baatz/ga_td_baatz.pro
+===================================================================
+--- operators/ga_td_baatz/ga_td_baatz.pro	(revision 91)
++++ operators/ga_td_baatz/ga_td_baatz.pro	(working copy)
+@@ -12,8 +12,8 @@
+ INCLUDEPATH += ../../ta_tdbu \
+     ../../qtparser \
+     ../../gaimage \
+-	../../../terralib_cvs/src/terralib/image_processing \
+-    ../../../terralib_cvs/src/terralib/kernel
++	../../../terralib/src/terralib/image_processing \
++    ../../../terralib/src/terralib/kernel
+ 	
+ LIBS += -L../../bin \
+     -L../../../netpbmBin/lib \
+@@ -22,13 +22,13 @@
+     -lqtparser \
+     -lpfm \
+     -lnetpbm \
+-        -L../../../terralib_cvs/terralibmw/Debug \
+-	-lzlib1 \
+-	-llibtiff_mw \
+-	-llibjpeg_mw \
+-	-llibshapelib_mw \
+-	-llibterralib_mw \
+-	-llibterralibpdi_mw
++        -L../../../terralib/Debug \
++	-lz \
++	-ltiff \
++	-ljpeg \
++	-lterralib_shp \
++	-lterralib \
++	
+ 
+ CONFIG += qt \
+ 	console \
+Index: operators/ga_td_import_segments/ga_td_import_segments.pro
+===================================================================
+--- operators/ga_td_import_segments/ga_td_import_segments.pro	(revision 91)
++++ operators/ga_td_import_segments/ga_td_import_segments.pro	(working copy)
+@@ -17,8 +17,8 @@
+     ../ascii2pfm \
+     ../csv2region \
+     ../regionmask \
+-	../../../terralib_cvs/src/terralib/image_processing \
+-    ../../../terralib_cvs/src/terralib/kernel
++	../../../terralib/src/terralib/image_processing \
++    ../../../terralib/src/terralib/kernel
+ 	
+ LIBS += -lta_tdbu \
+     -lascii2pfm \
+@@ -30,13 +30,13 @@
+     -lpfm \
+     -L../../bin \
+     -lqtparser \
+-        -L../../../terralib_cvs/terralibmw/Debug \
+-	-lzlib1 \
+-	-llibtiff_mw \
+-	-llibjpeg_mw \
+-	-llibshapelib_mw \
+-	-llibterralib_mw \
+-	-llibterralibpdi_mw
++        -L../../../terralib/Debug \
++	-lz \
++	-ltiff \
++	-ljpeg \
++	-lterralib_shp \
++	-lterralib \
+ 	
++	
+ CONFIG += qt \
+     release
+Index: ta_bu_generic/ta_bu_generic.pro
+===================================================================
+--- ta_bu_generic/ta_bu_generic.pro	(revision 91)
++++ ta_bu_generic/ta_bu_generic.pro	(working copy)
+@@ -12,8 +12,8 @@
+ INCLUDEPATH += ../ta_tdbu \
+     ../qtparser \
+     ../gaimage \
+-    ../../terralib_cvs/src/terralib/image_processing \
+-    ../../terralib_cvs/src/terralib/kernel
++    ../../terralib/src/terralib/image_processing \
++    ../../terralib/src/terralib/kernel
+ 
+ LIBS += -L../../netpbmBin/lib \
+ 	-L../bin \
+@@ -22,13 +22,13 @@
+     -lqtparser \
+     -lpfm \
+     -lnetpbm \
+-    -L../../terralib_cvs/terralibmw/Debug \
+-    -lzlib1 \
+-    -llibtiff_mw \
+-    -llibjpeg_mw \
+-    -llibshapelib_mw \
+-    -llibterralib_mw \
+-    -llibterralibpdi_mw
++    -L../../terralib/Debug \
++    -lz \
++    -ltiff \
++    -ljpeg \
++    -lterralib_shp \
++    -lterralib \
++    
+ 
+ CONFIG += qt \
+     release
+Index: ta_td_generic/ta_td_generic.pro
+===================================================================
+--- ta_td_generic/ta_td_generic.pro	(revision 91)
++++ ta_td_generic/ta_td_generic.pro	(working copy)
+@@ -12,8 +12,8 @@
+ INCLUDEPATH += ../ta_tdbu \
+     ../qtparser \
+     ../gaimage \
+-    ../../terralib_cvs/src/terralib/image_processing \
+-    ../../terralib_cvs/src/terralib/kernel
++    ../../terralib/src/terralib/image_processing \
++    ../../terralib/src/terralib/kernel
+ 	
+ LIBS += -L../../netpbmBin/lib \
+ 	-L../bin \
+@@ -22,13 +22,13 @@
+     -lqtparser \
+     -lpfm \
+     -lnetpbm \
+-    -L../../terralib_cvs/terralibmw/Debug \
+-    -lzlib1 \
+-    -llibtiff_mw \
+-    -llibjpeg_mw \
+-    -llibshapelib_mw \
+-    -llibterralib_mw \
+-    -llibterralibpdi_mw
++    -L../../terralib/Debug \
++    -lz \
++    -ltiff \
++    -ljpeg \
++    -lterralib_shp \
++    -lterralib \
++    
+ 
+ CONFIG += qt \
+ 	console \
