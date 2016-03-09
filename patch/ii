@@ -2,7 +2,7 @@ Index: base/terralib.pro
 ===================================================================
 --- base/terralib.pro	(révision 91)
 +++ base/terralib.pro	(copie de travail)
-@@ -1,7 +1,7 @@
+@@ -1,37 +1,36 @@
  ###########################################################################
  
  #Linux
@@ -11,7 +11,9 @@ Index: base/terralib.pro
  #    -lz \
  #    -ljpeg \
  #    -ltiff \
-@@ -10,28 +10,28 @@
+ #    -lterralibpdi \
+-#    -lshapelib \
++#    -lterralib_shp \
  #    -lterralib
  
  #Win32_MW
@@ -36,7 +38,7 @@ Index: base/terralib.pro
 +#    -ljpeg \
 +#    -ltiff \
 +#    -lterralibpdi \
-+#    -lshapelib \
++#    -lterralib_shp \
 +#    -lterralib
  
 -LIBS += -L../../terralib_cvs/terralibmw/Debug \
@@ -50,9 +52,8 @@ Index: base/terralib.pro
 +        -lz \
 +        -ltiff \
 +        -ljpeg \
-+        -lshapelib \
-+        -lterralib \
-+        -lterralibpdi
++        -lterralib_shp \
++        -lterralib
  
 -INCLUDEPATH += ../../terralib_cvs/src/shapelib \
 -			   ../../terralib_cvs/src/terralib/image_processing \
@@ -78,7 +79,7 @@ Index: gda/gda.pro
  LIBS += -lcore \
      -lgaimage \
      -lsemnetgui \
-@@ -44,13 +44,13 @@
+@@ -44,13 +44,12 @@
      -lbottomupgui \
      -L../../netpbmBin/lib \
      -L../bin \
@@ -93,9 +94,8 @@ Index: gda/gda.pro
 +    -lz \
 +    -ltiff \
 +    -ljpeg \
-+    -lshapelib \
-+    -lterralib \
-+    -lterralibpdi
++    -lterralib_shp \
++    -lterralib
  
  CONFIG += qt \
      release
@@ -114,7 +114,7 @@ Index: operators/ga_td_baatz/ga_td_baatz.pro
  	
  LIBS += -L../../bin \
      -L../../../netpbmBin/lib \
-@@ -22,13 +22,13 @@
+@@ -22,13 +22,12 @@
      -lqtparser \
      -lpfm \
      -lnetpbm \
@@ -129,9 +129,8 @@ Index: operators/ga_td_baatz/ga_td_baatz.pro
 +	-lz \
 +	-ltiff \
 +	-ljpeg \
-+	-lshapelib \
-+	-lterralib \
-+	-lterralibpdi
++	-lterralib_shp \
++	-lterralib
  
  CONFIG += qt \
  	console \
@@ -150,7 +149,7 @@ Index: operators/ga_td_import_segments/ga_td_import_segments.pro
  	
  LIBS += -lta_tdbu \
      -lascii2pfm \
-@@ -30,13 +30,13 @@
+@@ -30,13 +30,12 @@
      -lpfm \
      -L../../bin \
      -lqtparser \
@@ -165,9 +164,8 @@ Index: operators/ga_td_import_segments/ga_td_import_segments.pro
 +	-lz \
 +	-ltiff \
 +	-ljpeg \
-+	-lshapelib \
-+	-lterralib \
-+	-lterralibpdi
++	-lterralib_shp \
++	-lterralib
  	
  CONFIG += qt \
      release
@@ -186,7 +184,7 @@ Index: ta_bu_generic/ta_bu_generic.pro
  
  LIBS += -L../../netpbmBin/lib \
  	-L../bin \
-@@ -22,13 +22,13 @@
+@@ -22,13 +22,12 @@
      -lqtparser \
      -lpfm \
      -lnetpbm \
@@ -201,9 +199,8 @@ Index: ta_bu_generic/ta_bu_generic.pro
 +    -lz \
 +    -ltiff \
 +    -ljpeg \
-+    -lshapelib \
-+    -lterralib \
-+    -lterralibpdi
++    -lterralib_shp \
++    -lterralib
  
  CONFIG += qt \
      release
@@ -222,7 +219,7 @@ Index: ta_td_generic/ta_td_generic.pro
  	
  LIBS += -L../../netpbmBin/lib \
  	-L../bin \
-@@ -22,13 +22,13 @@
+@@ -22,13 +22,12 @@
      -lqtparser \
      -lpfm \
      -lnetpbm \
@@ -237,9 +234,8 @@ Index: ta_td_generic/ta_td_generic.pro
 +    -lz \
 +    -ltiff \
 +    -ljpeg \
-+    -lshapelib \
-+    -lterralib \
-+    -lterralibpdi
++    -lterralib_shp \
++    -lterralib
  
  CONFIG += qt \
  	console \
