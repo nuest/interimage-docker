@@ -1,8 +1,8 @@
 Index: base/terralib.pro
 ===================================================================
---- base/terralib.pro	(revision 91)
-+++ base/terralib.pro	(working copy)
-@@ -1,37 +1,37 @@
+--- base/terralib.pro	(révision 91)
++++ base/terralib.pro	(copie de travail)
+@@ -1,7 +1,7 @@
  ###########################################################################
  
  #Linux
@@ -11,9 +11,7 @@ Index: base/terralib.pro
  #    -lz \
  #    -ljpeg \
  #    -ltiff \
--#    -lterralibpdi \
-+#     \
- #    -lshapelib \
+@@ -10,28 +10,28 @@
  #    -lterralib
  
  #Win32_MW
@@ -37,7 +35,7 @@ Index: base/terralib.pro
 -#    -lterralib_mw
 +#    -ljpeg \
 +#    -ltiff \
-+#     \
++#    -lterralibpdi \
 +#    -lshapelib \
 +#    -lterralib
  
@@ -52,9 +50,9 @@ Index: base/terralib.pro
 +        -lz \
 +        -ltiff \
 +        -ljpeg \
-+        -lterralib_shp \
++        -lshapelib \
 +        -lterralib \
-+        
++        -lterralibpdi
  
 -INCLUDEPATH += ../../terralib_cvs/src/shapelib \
 -			   ../../terralib_cvs/src/terralib/image_processing \
@@ -63,35 +61,10 @@ Index: base/terralib.pro
 +			   ../../terralib/src/terralib/image_processing \
 +               ../../terralib/src/terralib/kernel
  	
-Index: gaimage/gaarray2dt.h
-===================================================================
---- gaimage/gaarray2dt.h	(revision 91)
-+++ gaimage/gaarray2dt.h	(working copy)
-@@ -19,6 +19,7 @@
- #define GAARRAY2DT_H
- 
- #include <assert.h>
-+#include <cstring>
- #include "gashareddatat.h"
- 
- namespace Ga {
-Index: gaimage/gaimage.pro
-===================================================================
---- gaimage/gaimage.pro	(revision 91)
-+++ gaimage/gaimage.pro	(working copy)
-@@ -61,7 +61,7 @@
- LIBS += -lpfm \
-     -lnetpbm \
-     -L../../netpbmBin/lib \
--    -lfftw3-3 \
-+    -lfftw3 \
-     -L../fftw \
-     -L../bin
- CONFIG +=  qt release
 Index: gda/gda.pro
 ===================================================================
---- gda/gda.pro	(revision 91)
-+++ gda/gda.pro	(working copy)
+--- gda/gda.pro	(révision 91)
++++ gda/gda.pro	(copie de travail)
 @@ -31,9 +31,9 @@
      ../qtparser \
      ../../netpbmBin/include \
@@ -120,16 +93,16 @@ Index: gda/gda.pro
 +    -lz \
 +    -ltiff \
 +    -ljpeg \
-+    -lterralib_shp \
++    -lshapelib \
 +    -lterralib \
-+    
++    -lterralibpdi
  
  CONFIG += qt \
      release
 Index: operators/ga_td_baatz/ga_td_baatz.pro
 ===================================================================
---- operators/ga_td_baatz/ga_td_baatz.pro	(revision 91)
-+++ operators/ga_td_baatz/ga_td_baatz.pro	(working copy)
+--- operators/ga_td_baatz/ga_td_baatz.pro	(révision 91)
++++ operators/ga_td_baatz/ga_td_baatz.pro	(copie de travail)
 @@ -12,8 +12,8 @@
  INCLUDEPATH += ../../ta_tdbu \
      ../../qtparser \
@@ -156,16 +129,16 @@ Index: operators/ga_td_baatz/ga_td_baatz.pro
 +	-lz \
 +	-ltiff \
 +	-ljpeg \
-+	-lterralib_shp \
++	-lshapelib \
 +	-lterralib \
-+	
++	-lterralibpdi
  
  CONFIG += qt \
  	console \
 Index: operators/ga_td_import_segments/ga_td_import_segments.pro
 ===================================================================
---- operators/ga_td_import_segments/ga_td_import_segments.pro	(revision 91)
-+++ operators/ga_td_import_segments/ga_td_import_segments.pro	(working copy)
+--- operators/ga_td_import_segments/ga_td_import_segments.pro	(révision 91)
++++ operators/ga_td_import_segments/ga_td_import_segments.pro	(copie de travail)
 @@ -17,8 +17,8 @@
      ../ascii2pfm \
      ../csv2region \
@@ -192,16 +165,16 @@ Index: operators/ga_td_import_segments/ga_td_import_segments.pro
 +	-lz \
 +	-ltiff \
 +	-ljpeg \
-+	-lterralib_shp \
++	-lshapelib \
 +	-lterralib \
++	-lterralibpdi
  	
-+	
  CONFIG += qt \
      release
 Index: ta_bu_generic/ta_bu_generic.pro
 ===================================================================
---- ta_bu_generic/ta_bu_generic.pro	(revision 91)
-+++ ta_bu_generic/ta_bu_generic.pro	(working copy)
+--- ta_bu_generic/ta_bu_generic.pro	(révision 91)
++++ ta_bu_generic/ta_bu_generic.pro	(copie de travail)
 @@ -12,8 +12,8 @@
  INCLUDEPATH += ../ta_tdbu \
      ../qtparser \
@@ -228,16 +201,16 @@ Index: ta_bu_generic/ta_bu_generic.pro
 +    -lz \
 +    -ltiff \
 +    -ljpeg \
-+    -lterralib_shp \
++    -lshapelib \
 +    -lterralib \
-+    
++    -lterralibpdi
  
  CONFIG += qt \
      release
 Index: ta_td_generic/ta_td_generic.pro
 ===================================================================
---- ta_td_generic/ta_td_generic.pro	(revision 91)
-+++ ta_td_generic/ta_td_generic.pro	(working copy)
+--- ta_td_generic/ta_td_generic.pro	(révision 91)
++++ ta_td_generic/ta_td_generic.pro	(copie de travail)
 @@ -12,8 +12,8 @@
  INCLUDEPATH += ../ta_tdbu \
      ../qtparser \
@@ -264,9 +237,9 @@ Index: ta_td_generic/ta_td_generic.pro
 +    -lz \
 +    -ltiff \
 +    -ljpeg \
-+    -lterralib_shp \
++    -lshapelib \
 +    -lterralib \
-+    
++    -lterralibpdi
  
  CONFIG += qt \
  	console \

@@ -91,9 +91,9 @@ RUN TA_TERRALIB_PATH=$DIR_DEV/terralib \
     TA_CPPUNIT_BIN_PATH=/usr/lib/x86_64-linux-gnu/libcppunit.so \
     qmake -r -Wall && make clean
 RUN make
-WORKDIR $DIR_DEV/terraaida/ta_operators/bin/Debug
-RUN cp -P lib* /usr/local/lib/ \
-    && ldconfig
+RUN cp -i -P $DIR_DEV/terraaida/ta_operators/bin/Debug/lib* /usr/local/lib/ && \
+    cp -i -P $DIR_DEV/terraaida/ta_operators/bin/Debug/ta_* /usr/local/bin/ && \
+    ldconfig
 
 
 
@@ -106,7 +106,6 @@ ENV VERSION_INTERIMAGE 1.43
 #    unzip interimage-${VERSION_INTERIMAGE}.zip && mv "InterIMAGE Source ${VERSION_INTERIMAGE}" interimage
 COPY interimage $DIR_DEV/interimage
 COPY patch/ii /tmp/ii
-RUN cp -i $DIR_DEV/terraaida/ta_operators/bin/Debug/ta_* /usr/local/bin/
 
 WORKDIR $DIR_DEV/interimage
 # RUN sed -i '/^namespace/i \
