@@ -108,6 +108,7 @@ COPY interimage $DIR_DEV/interimage
 COPY patch/ii /tmp/ii
 
 WORKDIR $DIR_DEV/interimage
+RUN patch -p0 -i /tmp/ii
 # RUN sed -i '/^namespace/i \
 # \#define _snprintf snprintf\
 # \
