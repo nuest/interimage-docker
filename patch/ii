@@ -1,0 +1,538 @@
+Index: base/terralib.pro
+===================================================================
+--- base/terralib.pro	(révision 91)
++++ base/terralib.pro	(copie de travail)
+@@ -1,37 +1,36 @@
+ ###########################################################################
+ 
+ #Linux
+-#LIBS += -L/home/dario/terralib_cvs/terralibx/lib \
++#LIBS += -L/home/dario/terralib/terralibx/lib \
+ #    -lz \
+ #    -ljpeg \
+ #    -ltiff \
+ #    -lterralibpdi \
+-#    -lshapelib \
++#    -lterralib_shp \
+ #    -lterralib
+ 
+ #Win32_MW
+-#LIBS += -L../../terralib_cvs/src/zlib/lib \
+-#    -L../../terralib_cvs/src/tiff/Release \
+-#    -L../../terralib_cvs/src/libjpeg/Release \
+-#    -L../../terralib_cvs/src/shapelib/Release \
+-#    -L../../terralib_cvs/src/terralib/kernel/Release \
+-#    -L../../terralib_cvs/src/terralib/image_processing/Release \
++#LIBS += -L../../terralib/src/zlib/lib \
++#    -L../../terralib/src/tiff/Release \
++#    -L../../terralib/src/libjpeg/Release \
++#    -L../../terralib/src/shapelib/Release \
++#    -L../../terralib/src/terralib/kernel/Release \
++#    -L../../terralib/src/terralib/image_processing/Release \
+ #    -lz \
+-#    -ljpeg_mw \
+-#    -ltiff_mw \
+-#    -lterralibpdi_mw \
+-#    -lshapelib_mw \
+-#    -lterralib_mw
++#    -ljpeg \
++#    -ltiff \
++#    -lterralibpdi \
++#    -lterralib_shp \
++#    -lterralib
+ 
+-LIBS += -L../../terralib_cvs/terralibmw/Debug \
+-        -lzlib1 \
+-        -llibtiff_mw \
+-        -llibjpeg_mw \
+-        -llibshapelib_mw \
+-        -llibterralib_mw \
+-        -llibterralibpdi_mw
++LIBS += -L../../terralib/Debug \
++        -lz \
++        -ltiff \
++        -ljpeg \
++        -lterralib_shp \
++        -lterralib
+ 
+-INCLUDEPATH += ../../terralib_cvs/src/shapelib \
+-			   ../../terralib_cvs/src/terralib/image_processing \
+-               ../../terralib_cvs/src/terralib/kernel
++INCLUDEPATH += ../../terralib/src/shapelib \
++			   ../../terralib/src/terralib/image_processing \
++               ../../terralib/src/terralib/kernel
+ 	
+Index: gaimage/gaarray2dt.h
+===================================================================
+--- gaimage/gaarray2dt.h	(révision 91)
++++ gaimage/gaarray2dt.h	(copie de travail)
+@@ -18,6 +18,7 @@
+ #ifndef GAARRAY2DT_H
+ #define GAARRAY2DT_H
+ 
++#include <string.h>
+ #include <assert.h>
+ #include "gashareddatat.h"
+ 
+Index: gaimage/gaimage.pro
+===================================================================
+--- gaimage/gaimage.pro	(révision 91)
++++ gaimage/gaimage.pro	(copie de travail)
+@@ -61,7 +61,7 @@
+ LIBS += -lpfm \
+     -lnetpbm \
+     -L../../netpbmBin/lib \
+-    -lfftw3-3 \
++    -lfftw3 \
+     -L../fftw \
+     -L../bin
+ CONFIG +=  qt release
+Index: gaimage/gaimaget.h
+===================================================================
+--- gaimage/gaimaget.h	(révision 91)
++++ gaimage/gaimaget.h	(copie de travail)
+@@ -41,6 +41,10 @@
+ #include <pnm.h>
+ #include <pfm.h>
+ }
++#ifdef min
++#undef min
++#endif
++
+ #define GA_MAX_CHANNELS 10
+ #include <assert.h>
+ #include "gadefines.h"
+Index: gaimage/garegiont.h
+===================================================================
+--- gaimage/garegiont.h	(révision 91)
++++ gaimage/garegiont.h	(copie de travail)
+@@ -39,35 +39,11 @@
+   }
+ }
+ 
+-/** fill the current image with unique labels. The background must be set to 0,
+-    the region borders must be set to 1. The regions will be labeled with values
+-    starting from 2. This version is 6 times faster by usage of pointers */
+-template<class PixTyp> PixTyp labelImage(ImageT<PixTyp> &img)
+-{
+-  // written by O. Stahlhut 01/01
+-
+-  PixTyp *pix = img.begin();
+-  PixTyp label_set = 2;
+-
+-  for ( int i = 0; i < (int)(img.sizeImage()); ++i, ++pix )
+-  {
+-    if (!(*pix))
+-    {
+-      label4((PixTyp*)img.begin(),img.sizeX(),img.sizeY(), i, (PixTyp)0, label_set);
+-      label_set += 1;
+-    }
+-  }
+-
+-  return (label_set);
+-}
+-
+ /** relabel a single label of an image. Consider only the 4 point neighbourhood of
+     each pixel, i.e. diagonal positioned pixels are not traced and included.
+     begin: pointer to image data, size_x / size_y: image width and height,
+     index: offset to pixel of interest (seed), search for pixels of colour "label_val",
+-    set them to colour "label_set". returns the number of pixels in the new label.
+-*/
+-
++    set them to colour "label_set". returns the number of pixels in the new label. */
+ template<class PixTyp> unsigned int label4(PixTyp* begin, int size_x, int size_y, int index, PixTyp label_val, PixTyp label_set)
+ {
+   unsigned int labelsize = 0;
+@@ -127,6 +103,28 @@
+   return labelsize;
+ }
+ 
++/** fill the current image with unique labels. The background must be set to 0,
++    the region borders must be set to 1. The regions will be labeled with values
++    starting from 2. This version is 6 times faster by usage of pointers */
++template<class PixTyp> PixTyp labelImage(ImageT<PixTyp> &img)
++{
++  // written by O. Stahlhut 01/01
++
++  PixTyp *pix = img.begin();
++  PixTyp label_set = 2;
++
++  for ( int i = 0; i < (int)(img.sizeImage()); ++i, ++pix )
++  {
++    if (!(*pix))
++    {
++      label4((PixTyp*)img.begin(),img.sizeX(),img.sizeY(), i, (PixTyp)0, label_set);
++      label_set += 1;
++    }
++  }
++
++  return (label_set);
++}
++
+ /** used by labelImage, this is the cool (6 times faster) version with pointers ;) */
+ /*   TMP TMP old version ...
+ template<class PixTyp> void label4(PixTyp* begin, int size_x, int size_y, int index, PixTyp label_val)
+@@ -186,44 +184,11 @@
+ */
+ 
+ 
+-/** de-speckle the current image. The background should be set to 0.
+-    A connected region with label "label_val" (1) is set to label "label_set" (0),
+-    if the region is smaller than "size". Be aware that the label -1 is used for
+-    an intermediate step and shouldn't be used in the labelimage! */
+-template<class PixTyp> void despeckle(ImageT<PixTyp> &in, int size, PixTyp label_val = 1, PixTyp label_set = 0)
+-{
+-  // written by O. Stahlhut 10/01
+-
+-  PixTyp *pix = in.begin();
+-  unsigned int labelsize;
+-
+-  for (int i = 0; i < (int)(in.sizeImage()); ++i, ++pix)
+-  {
+-    if (*pix == label_val)
+-    {
+-      labelsize = label8(in.begin(), in.sizeX(), in.sizeY(), i, label_val, (PixTyp)-1);
+-      if (labelsize < (unsigned int)size)
+-				label8(in.begin(), in.sizeX(), in.sizeY(), i, (PixTyp)-1, label_set);
+-    }
+-  }
+-
+-  // restore original label values
+-  pix = in.begin();
+-  for (int i = (int)(in.sizeImage()); i; --i, ++pix)
+-  {
+-    if (*pix == (PixTyp)-1)
+-      *pix = label_val;
+-  }
+-}
+-
+-
+ /** relabel a single label of an image. Consider the 8 point neighbourhood of
+     each pixel, i.e. diagonal positioned pixels are traced and included.
+     begin: pointer to image data, size_x / size_y: image width and height,
+     index: offset to pixel of interest (seed), search for pixels of colour "label_val",
+-    set them to colour "label_set". returns the number of pixels in the new label.
+-*/
+-
++    set them to colour "label_set". returns the number of pixels in the new label. */
+ template<class PixTyp>unsigned int label8(PixTyp* begin, int size_x, int size_y, int index, PixTyp label_val, PixTyp label_set)
+ {
+   unsigned int labelsize = 0;
+@@ -290,6 +255,38 @@
+   return labelsize;
+ }
+ 
++
++/** de-speckle the current image. The background should be set to 0.
++    A connected region with label "label_val" (1) is set to label "label_set" (0),
++    if the region is smaller than "size". Be aware that the label -1 is used for
++    an intermediate step and shouldn't be used in the labelimage! */
++template<class PixTyp> void despeckle(ImageT<PixTyp> &in, int size, PixTyp label_val = 1, PixTyp label_set = 0)
++{
++  // written by O. Stahlhut 10/01
++
++  PixTyp *pix = in.begin();
++  unsigned int labelsize;
++
++  for (int i = 0; i < (int)(in.sizeImage()); ++i, ++pix)
++  {
++    if (*pix == label_val)
++    {
++      labelsize = label8(in.begin(), in.sizeX(), in.sizeY(), i, label_val, (PixTyp)-1);
++      if (labelsize < (unsigned int)size)
++                label8(in.begin(), in.sizeX(), in.sizeY(), i, (PixTyp)-1, label_set);
++    }
++  }
++
++  // restore original label values
++  pix = in.begin();
++  for (int i = (int)(in.sizeImage()); i; --i, ++pix)
++  {
++    if (*pix == (PixTyp)-1)
++      *pix = label_val;
++  }
++}
++
++
+ /** relabel a single label of an image. Consider the 8 point neighbourhood of
+     each pixel, i.e. diagonal positioned pixels are traced and included.
+     begin: pointer to image data, size_x / size_y: image width and height,
+Index: gda/gda.pro
+===================================================================
+--- gda/gda.pro	(révision 91)
++++ gda/gda.pro	(copie de travail)
+@@ -31,9 +31,9 @@
+     ../qtparser \
+     ../../netpbmBin/include \
+     ../bottomupgui \
+-    ../../terralib_cvs/src/shapelib \
+-    ../../terralib_cvs/src/terralib/image_processing \
+-    ../../terralib_cvs/src/terralib/kernel
++    ../../terralib/src/shapelib \
++    ../../terralib/src/terralib/image_processing \
++    ../../terralib/src/terralib/kernel
+ LIBS += -lcore \
+     -lgaimage \
+     -lsemnetgui \
+@@ -44,13 +44,12 @@
+     -lbottomupgui \
+     -L../../netpbmBin/lib \
+     -L../bin \
+-    -L../../terralib_cvs/terralibmw/Debug \
+-    -lzlib1 \
+-    -llibtiff_mw \
+-    -llibjpeg_mw \
+-    -llibshapelib_mw \
+-    -llibterralib_mw \
+-    -llibterralibpdi_mw
++    -L../../terralib/Debug \
++    -lz \
++    -ltiff \
++    -ljpeg \
++    -lterralib_shp \
++    -lterralib
+ 
+ CONFIG += qt \
+     release
+Index: operators/ga_td_baatz/ga_td_baatz.pro
+===================================================================
+--- operators/ga_td_baatz/ga_td_baatz.pro	(révision 91)
++++ operators/ga_td_baatz/ga_td_baatz.pro	(copie de travail)
+@@ -12,8 +12,8 @@
+ INCLUDEPATH += ../../ta_tdbu \
+     ../../qtparser \
+     ../../gaimage \
+-	../../../terralib_cvs/src/terralib/image_processing \
+-    ../../../terralib_cvs/src/terralib/kernel
++	../../../terralib/src/terralib/image_processing \
++    ../../../terralib/src/terralib/kernel
+ 	
+ LIBS += -L../../bin \
+     -L../../../netpbmBin/lib \
+@@ -22,13 +22,12 @@
+     -lqtparser \
+     -lpfm \
+     -lnetpbm \
+-        -L../../../terralib_cvs/terralibmw/Debug \
+-	-lzlib1 \
+-	-llibtiff_mw \
+-	-llibjpeg_mw \
+-	-llibshapelib_mw \
+-	-llibterralib_mw \
+-	-llibterralibpdi_mw
++        -L../../../terralib/Debug \
++	-lz \
++	-ltiff \
++	-ljpeg \
++	-lterralib_shp \
++	-lterralib
+ 
+ CONFIG += qt \
+ 	console \
+Index: operators/ga_td_import_segments/ga_td_import_segments.pro
+===================================================================
+--- operators/ga_td_import_segments/ga_td_import_segments.pro	(révision 91)
++++ operators/ga_td_import_segments/ga_td_import_segments.pro	(copie de travail)
+@@ -17,8 +17,8 @@
+     ../ascii2pfm \
+     ../csv2region \
+     ../regionmask \
+-	../../../terralib_cvs/src/terralib/image_processing \
+-    ../../../terralib_cvs/src/terralib/kernel
++	../../../terralib/src/terralib/image_processing \
++    ../../../terralib/src/terralib/kernel
+ 	
+ LIBS += -lta_tdbu \
+     -lascii2pfm \
+@@ -30,13 +30,12 @@
+     -lpfm \
+     -L../../bin \
+     -lqtparser \
+-        -L../../../terralib_cvs/terralibmw/Debug \
+-	-lzlib1 \
+-	-llibtiff_mw \
+-	-llibjpeg_mw \
+-	-llibshapelib_mw \
+-	-llibterralib_mw \
+-	-llibterralibpdi_mw
++        -L../../../terralib/Debug \
++	-lz \
++	-ltiff \
++	-ljpeg \
++	-lterralib_shp \
++	-lterralib
+ 	
+ CONFIG += qt \
+     release
+Index: ta_bu_generic/ta_bu_generic.pro
+===================================================================
+--- ta_bu_generic/ta_bu_generic.pro	(révision 91)
++++ ta_bu_generic/ta_bu_generic.pro	(copie de travail)
+@@ -12,8 +12,8 @@
+ INCLUDEPATH += ../ta_tdbu \
+     ../qtparser \
+     ../gaimage \
+-    ../../terralib_cvs/src/terralib/image_processing \
+-    ../../terralib_cvs/src/terralib/kernel
++    ../../terralib/src/terralib/image_processing \
++    ../../terralib/src/terralib/kernel
+ 
+ LIBS += -L../../netpbmBin/lib \
+ 	-L../bin \
+@@ -22,13 +22,12 @@
+     -lqtparser \
+     -lpfm \
+     -lnetpbm \
+-    -L../../terralib_cvs/terralibmw/Debug \
+-    -lzlib1 \
+-    -llibtiff_mw \
+-    -llibjpeg_mw \
+-    -llibshapelib_mw \
+-    -llibterralib_mw \
+-    -llibterralibpdi_mw
++    -L../../terralib/Debug \
++    -lz \
++    -ltiff \
++    -ljpeg \
++    -lterralib_shp \
++    -lterralib
+ 
+ CONFIG += qt \
+     release
+Index: ta_td_generic/ta_td_generic.pro
+===================================================================
+--- ta_td_generic/ta_td_generic.pro	(révision 91)
++++ ta_td_generic/ta_td_generic.pro	(copie de travail)
+@@ -12,8 +12,8 @@
+ INCLUDEPATH += ../ta_tdbu \
+     ../qtparser \
+     ../gaimage \
+-    ../../terralib_cvs/src/terralib/image_processing \
+-    ../../terralib_cvs/src/terralib/kernel
++    ../../terralib/src/terralib/image_processing \
++    ../../terralib/src/terralib/kernel
+ 	
+ LIBS += -L../../netpbmBin/lib \
+ 	-L../bin \
+@@ -22,13 +22,12 @@
+     -lqtparser \
+     -lpfm \
+     -lnetpbm \
+-    -L../../terralib_cvs/terralibmw/Debug \
+-    -lzlib1 \
+-    -llibtiff_mw \
+-    -llibjpeg_mw \
+-    -llibshapelib_mw \
+-    -llibterralib_mw \
+-    -llibterralibpdi_mw
++    -L../../terralib/Debug \
++    -lz \
++    -ltiff \
++    -ljpeg \
++    -lterralib_shp \
++    -lterralib
+ 
+ CONFIG += qt \
+ 	console \
+Index: ta_tdbu/node.h
+===================================================================
+--- ta_tdbu/node.h	(révision 91)
++++ ta_tdbu/node.h	(copie de travail)
+@@ -47,8 +47,8 @@
+ /**class to handel the infos for one image
+   *@author J�rgen B�ckner
+   */
+-class NodeList;
+-class Ga::Image;
++//class NodeList;
++//class Ga::Image;
+ 
+ class Node : public ArgDict {
+ public:
+Index: ta_tdbu/point2d.h
+===================================================================
+--- ta_tdbu/point2d.h	(révision 91)
++++ ta_tdbu/point2d.h	(copie de travail)
+@@ -19,7 +19,7 @@
+ #define POINT2D_H
+ 
+ #include <math.h>
+-#include <iostream.h>
++#include <iostream>
+ 
+ /**class for 2D points
+   *@author juergen bueckner
+Index: ta_tdbu/stack.cpp
+===================================================================
+--- ta_tdbu/stack.cpp	(révision 91)
++++ ta_tdbu/stack.cpp	(copie de travail)
+@@ -3615,8 +3615,8 @@
+ 
+ #################################################*/
+ 
+-namespace PDIStatistic
+-{
++//namespace PDIStatistic
++//{
+ 
+ /** getMean from node using Terralib Function */
+ bool Stack::getMean()
+@@ -4289,7 +4289,7 @@
+   }
+ }
+ 
+-}
++//} // namespace PDIStatistic
+ 
+  /*#################################################
+ 
+@@ -4300,8 +4300,8 @@
+ 
+ #################################################*/
+ 
+-namespace PDIHaralick
+-{
++//namespace PDIHaralick
++//{
+ 
+ /** getEntropy GLCM from node using Terralib Function */
+ bool Stack::getEntropyGLCM()
+@@ -4920,7 +4920,7 @@
+ 
+ }
+ 
+-}
++//} // namespace PDIHaralick
+ 
+ /** band division using Terralib Function */
+ bool Stack::bandDiv()
+@@ -7732,8 +7732,8 @@
+ 
+ #################################################*/
+ 
+-namespace PolygonProperties
+-{
++//namespace PolygonProperties
++//{
+ 
+ /** getArea from node using Terralib Function */
+ bool Stack::getArea()
+@@ -8408,4 +8408,4 @@
+   }
+ }
+ 
+-}
++//} // namespace PolygonProperties
+Index: ta_tdbu/tdbu.cpp
+===================================================================
+--- ta_tdbu/tdbu.cpp	(révision 91)
++++ ta_tdbu/tdbu.cpp	(copie de travail)
+@@ -16,7 +16,7 @@
+  ***************************************************************************/
+ 
+ #include "tdbu.h"
+-#include "iostream.h"
++#include <iostream>
+ using namespace std;
+ 
+ TDBU::TDBU()

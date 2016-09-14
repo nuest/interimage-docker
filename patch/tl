@@ -1,0 +1,55 @@
+Index: src/terralib/drivers/PostgreSQL/TeEWKBDriver.cpp
+===================================================================
+--- src/terralib/drivers/PostgreSQL/TeEWKBDriver.cpp	(révision 11941)
++++ src/terralib/drivers/PostgreSQL/TeEWKBDriver.cpp	(copie de travail)
+@@ -154,7 +154,7 @@
+ {
+ 	if(geom == 0)
+ 	{
+-		return false;
++        return 0; //false;
+ 	}
+ 
+ //if srid is not setted, there is no need to add the extended wkb information
+Index: src/terralib/drivers/qt4/TeApplicationUtils.cpp
+===================================================================
+--- src/terralib/drivers/qt4/TeApplicationUtils.cpp	(révision 11941)
++++ src/terralib/drivers/qt4/TeApplicationUtils.cpp	(copie de travail)
+@@ -31,7 +31,10 @@
+ #include <windows.h>
+ #include <direct.h>
+ #include <io.h>
++#else
++#include <unistd.h>
+ #endif
++#define F_OK 0
+ 
+ #include <errno.h>
+ #include <qstring.h>
+Index: src/terralib/kernel/TeConnectionPool.cpp
+===================================================================
+--- src/terralib/kernel/TeConnectionPool.cpp	(révision 11941)
++++ src/terralib/kernel/TeConnectionPool.cpp	(copie de travail)
+@@ -4,6 +4,9 @@
+ #include "TeDatabaseFactory.h"
+ #include "TeDatabaseFactoryParams.h"
+ #include "TeException.h"
++#ifndef WIN32
++    #include <unistd.h>
++#endif
+ 
+ TeConnectionPool::TeConnectionPool(const unsigned int& maxConnections, const unsigned int& maxIdle, const clock_t& maxWait) :
+ maxConnections_(maxConnections),
+Index: src/terralib/kernel/yyTemporal.cpp
+===================================================================
+--- src/terralib/kernel/yyTemporal.cpp	(révision 11941)
++++ src/terralib/kernel/yyTemporal.cpp	(copie de travail)
+@@ -74,7 +74,7 @@
+ 	myinputptr_aux = strIn;
+ 	myinputptr = myinputptr_aux.c_str();
+ 	
+-        myinputlim = (intptr_t)myinputptr + strIn.size ();
++    //myinputlim = (intptr_t)myinputptr + strIn.size ();
+ 	database_ = db;
+ 	return 1;
+ }
